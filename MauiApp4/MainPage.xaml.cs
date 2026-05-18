@@ -53,14 +53,4 @@ public partial class MainPage : ContentPage
     {
         PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
     }
-
-    private async void OnGoogleLoginTapped(object sender, EventArgs e)
-    {
-        await DisplayAlert("Coming Soon", "Google sign-in will be available in the mobile version.", "OK");
-    }
-
-    private async void OnFacebookLoginTapped(object sender, EventArgs e)
-    {
-        await DisplayAlert("Coming Soon", "Facebook sign-in will be available in the mobile version.", "OK");
-    }
 }
