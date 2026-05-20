@@ -4,7 +4,7 @@
              xmlns:components="clr-namespace:project"
              x:Class="project.ProfilePage"
              Title="ProfilePage"
-             BackgroundColor="#E2DFD2">
+             BackgroundColor="white">
 
 
     <Grid RowDefinitions="Auto,*">

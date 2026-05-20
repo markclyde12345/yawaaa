@@ -255,6 +255,59 @@ namespace project
                     Notes = notes,
                     CreatedAt = DateTime.UtcNow.ToString("o")
                 });
+
+            await UpdateStreakAsync();
+        }
+
+        // ─── UPDATE STREAK ────────────────────────────────────
+        public static async Task UpdateStreakAsync()
+        {
+            EnsureUser();
+
+            try
+            {
+                var entries = await _db.Child("moods")
+                    .Child(CurrentUserId)
+                    .OnceAsync<MoodEntry>();
+
+                var loggedDates = entries
+                    .Select(e => {
+                        DateTime.TryParse(e.Object.CreatedAt, out var d);
+                        return d.Date;
+                    })
+                    .Where(d => d != default)
+                    .Distinct()
+                    .OrderByDescending(d => d)
+                    .ToList();
+
+                if (loggedDates.Count == 0)
+                {
+                    await _db.Child("users").Child(CurrentUserId).Child("streak").PutAsync(0);
+                    return;
+                }
+
+                var today = DateTime.Today;
+                if (loggedDates[0] < today.AddDays(-1))
+                {
+                    await _db.Child("users").Child(CurrentUserId).Child("streak").PutAsync(0);
+                    return;
+                }
+
+                int streak = 1;
+                for (int i = 1; i < loggedDates.Count; i++)
+                {
+                    if ((loggedDates[i - 1] - loggedDates[i]).Days == 1)
+                        streak++;
+                    else
+                        break;
+                }
+
+                await _db.Child("users").Child(CurrentUserId).Child("streak").PutAsync(streak);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UpdateStreakAsync error: {ex.Message}");
+            }
         }
 
         // ─── GET MOODS ───────────────────────────────────────
